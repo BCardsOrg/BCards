@@ -7,7 +7,7 @@
         android:layout_width="167dp"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="First Change"
+        android:text="Second Change"
         android:id="@+id/textView"
         android:layout_gravity="left|top" />
 </FrameLayout>
