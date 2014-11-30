@@ -3,12 +3,14 @@ package com.bcards.eu.bcards;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.util.Log;
@@ -113,6 +115,19 @@ public class MainActivity extends Activity {
         return outputDir;
     }
 
+    Uri generateMockUri() {
+        Uri photoFileUri = null;
+        File outputDir = getPhotoDirectory();
+
+        if(outputDir != null) {
+            String photoFileName = "IMG_201411330_230241.jpg";
+
+            File photoFile = new File(outputDir, photoFileName);
+            photoFileUri = Uri.fromFile(photoFile);
+        }
+        return photoFileUri;
+    }
+
     Uri generateTimeStampPhotoFileUri() {
         Uri photoFileUri = null;
         File outputDir = getPhotoDirectory();
@@ -145,6 +160,11 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            Intent myIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            myIntent.putExtra("key", "moshe"); //Optional parameters
+            MainActivity.this.startActivity(myIntent);
+
             return true;
         }
 
@@ -199,7 +219,16 @@ public class MainActivity extends Activity {
             map.put("ImageContent",imgContent);
 
             //UrlHelper.postJsonData("http://10.0.0.3:43000/api/Account/YmarqAddProduct",map);
-            String result = UrlHelper.uploadFileToServer("http://10.0.0.3:43000/api/Account/YmarqUploadFile", _photoFileUri2.getPath());
+            //String result = UrlHelper.uploadFileToServer("http://10.0.0.3:43000/api/Account/YmarqUploadFile", _photoFileUri2.getPath());
+
+
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            String key = getResources().getString(R.string.pref_baseurl_key);
+            String def = getResources().getString(R.string.pref_baseurl_default);
+            String baseUrl = prefs.getString(key, def);
+
+            String fileName = generateMockUri().getPath();
+            String result = UrlHelper.uploadFileToServer(baseUrl+ "/api/values",fileName );
         }
 
         protected void onProgressUpdate(Integer... progress) {
