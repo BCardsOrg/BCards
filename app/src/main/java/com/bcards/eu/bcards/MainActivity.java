@@ -99,7 +99,8 @@ public class MainActivity extends Activity {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
                 byte[] bytes = baos.toByteArray();
-                String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                //String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
+                String encodedString = "";//Base64.encodeToString(bytes, Base64.DEFAULT);
 
                 PostDataToCloud(encodedString);
                 break;
