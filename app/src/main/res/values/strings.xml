@@ -9,7 +9,7 @@
 
     <string name="pref_baseurl_label">BaseUrl</string>
     <string name="pref_baseurl_key">baseurl</string>
-    <string name="pref_baseurl_default2">http://31.168.80.150:8030</string>
-    <string name="pref_baseurl_default">http://10.10.10.43:8030</string>
+    <string name="pref_baseurl_default">http://31.168.80.150:8030</string>
+
 
 </resources>

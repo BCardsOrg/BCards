@@ -42,6 +42,7 @@ public class UrlHelper {
     public static String LOGGER_TAG = "URLREQ:";
 
     public static String uploadFileToServer(String targetUrl, String filename) {
+        String result="";
         String response = "error";
         Log.e("Image filename", filename);
         Log.e("url", targetUrl);
@@ -124,6 +125,16 @@ public class UrlHelper {
             Log.i("Server Response Code ", "" + serverResponseCode);
             Log.i("Server Response Message", serverResponseMessage);
 
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line+"\n");
+            }
+            br.close();
+            result = sb.toString();
+
             if (serverResponseCode == 200) {
                 response = "true";
             }
@@ -153,7 +164,7 @@ public class UrlHelper {
             Log.e("Send file Exception", ex.getMessage() + "");
             ex.printStackTrace();
         }
-        return response;
+        return result;
     }
 
     public static String requestPostUrlInline(String url, String postParameters) {

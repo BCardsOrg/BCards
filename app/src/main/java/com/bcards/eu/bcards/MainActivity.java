@@ -2,6 +2,7 @@ package com.bcards.eu.bcards;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -19,13 +20,17 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class MainActivity extends Activity {
@@ -39,9 +44,21 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+
+
+            FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
+            PlaceholderFragment myFragment = new PlaceholderFragment();
+
+            //fragTrans.replace(android.R.id.content, myFragment, "MY_FRAGMENT");
+
+            fragTrans.add(R.id.container, myFragment,"MY_FRAGMENT")
                     .commit();
+
+
+           // getFragmentManager().beginTransaction()
+                    //.replace(R.id.MainFrameLayout,myFragment,"MY_FRAGMENT")
+                    //.addToBackStack("YOUR_SOURCE_FRAGMENT_TAG").commit();
+
         }
     }
 
@@ -52,7 +69,8 @@ public class MainActivity extends Activity {
     }
 
     private void TakePicture() {
-        _photoFileUri2 = generateTimeStampPhotoFileUri();
+        _photoFileUri2 = generateTimeStampPhotoFileUri2();
+
 
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, _photoFileUri2);
@@ -115,7 +133,7 @@ public class MainActivity extends Activity {
         return outputDir;
     }
 
-    Uri generateMockUri() {
+    Uri generateMockUri3() {
         Uri photoFileUri = null;
         File outputDir = getPhotoDirectory();
 
@@ -128,7 +146,7 @@ public class MainActivity extends Activity {
         return photoFileUri;
     }
 
-    Uri generateTimeStampPhotoFileUri() {
+    Uri generateTimeStampPhotoFileUri2() {
         Uri photoFileUri = null;
         File outputDir = getPhotoDirectory();
 
@@ -176,13 +194,26 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        public ArrayAdapter<String> fieldsOcr;
+
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
+
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            List<String> productsList = new ArrayList<String>();
+
+            fieldsOcr = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,productsList);
+
+            ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
+
+            lv1.setAdapter(fieldsOcr);
+
             return rootView;
         }
     }
@@ -198,19 +229,19 @@ public class MainActivity extends Activity {
 
         private final String LOG_TAG =PostImageTask.class.getSimpleName();
 
-        protected String[] doInBackground(String... userCodes)
-        {
+        protected String[] doInBackground(String... userCodes) {
+            String[] results = null;
             try {
                 String image64 = userCodes[0];
-                SendImageString(image64);
+                results = SendImageString(image64);
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            return null;
+            return results;
         }
 
-        private void SendImageString(String imgContent) throws Exception {
+        private String[] SendImageString(String imgContent) throws Exception {
 
             HashMap<String, String> map = new HashMap<String, String>();
             map.put("PublisherId","1091");
@@ -218,26 +249,40 @@ public class MainActivity extends Activity {
             map.put("Description","descr");
             map.put("ImageContent",imgContent);
 
-            //UrlHelper.postJsonData("http://10.0.0.3:43000/api/Account/YmarqAddProduct",map);
-            //String result = UrlHelper.uploadFileToServer("http://10.0.0.3:43000/api/Account/YmarqUploadFile", _photoFileUri2.getPath());
-
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String key = getResources().getString(R.string.pref_baseurl_key);
             String def = getResources().getString(R.string.pref_baseurl_default);
             String baseUrl = prefs.getString(key, def);
 
-            String fileName = generateMockUri().getPath();
-            String result = UrlHelper.uploadFileToServer(baseUrl+ "/api/values",fileName );
+            String fileName = _photoFileUri2.getPath();
+            //String fileName = generateMockUri2().getPath();
+            String result = UrlHelper.uploadFileToServer(baseUrl + "/api/values", fileName);
+
+            String[] results = JsonHelper.GetOcrDataFromResponse(result);
+            return results;
         }
 
         protected void onProgressUpdate(Integer... progress) {
             //setProgressPercent(progress[0]);
         }
 
-        protected void onPostExecute(String[] forecastArray) {
+        protected void onPostExecute(String[] fieldsOcr) {
 
-            //showDialog("Downloaded " + result + " bytes");
+            UpdateFieldsView(fieldsOcr);
+        }
+
+        private void UpdateFieldsView(String[] formatedData) {
+
+            PlaceholderFragment myFragment = (PlaceholderFragment)getFragmentManager().findFragmentByTag("MY_FRAGMENT");
+            if (myFragment.isVisible()) {
+
+                myFragment.fieldsOcr.clear();
+                if (formatedData == null) {
+                    formatedData = new String[1];
+                    formatedData[0] = "No results";
+                }
+                myFragment.fieldsOcr.addAll(formatedData);
+            }
         }
     }
 }
