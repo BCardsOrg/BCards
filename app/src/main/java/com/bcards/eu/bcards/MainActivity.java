@@ -3,6 +3,8 @@ package com.bcards.eu.bcards;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -13,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +73,6 @@ public class MainActivity extends Activity {
     private void TakePicture() {
         _photoFileUri2 = generateTimeStampPhotoFileUri2();
 
-
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, _photoFileUri2);
 
@@ -95,10 +96,13 @@ public class MainActivity extends Activity {
 
                 imageBitmap = BitmapFactory.decodeFile(_photoFileUri2.getPath());
 
+                Bitmap resized = Bitmap.createScaledBitmap(imageBitmap,(int)(imageBitmap.getWidth()*0.2), (int)(imageBitmap.getHeight()*0.2), true);
+                saveToInternalSorage(resized,_photoFileUri2);
+
                 //base64
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
-                byte[] bytes = baos.toByteArray();
+                resized.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+                //byte[] bytes = baos.toByteArray();
                 //String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
                 String encodedString = "";//Base64.encodeToString(bytes, Base64.DEFAULT);
 
@@ -114,6 +118,32 @@ public class MainActivity extends Activity {
         //notify galery
         //sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
         //Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+    }
+
+    private String saveToInternalSorage(Bitmap bitmapImage, Uri uriOriginal){
+
+        String path = uriOriginal.getPath()+".resized.jpg";
+
+
+
+        ContextWrapper cw = new ContextWrapper(getApplicationContext());
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        //File mypath3=new File(directory,"profile.jpg");
+
+        FileOutputStream fos = null;
+        try {
+
+            fos = new FileOutputStream(path);
+
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return directory.getAbsolutePath();
     }
 
     File getPhotoDirectory() {
@@ -228,7 +258,7 @@ public class MainActivity extends Activity {
 
     public class PostImageTask extends AsyncTask<String, Integer, String[]> {
 
-        private final String LOG_TAG =PostImageTask.class.getSimpleName();
+        //private final String LOG_TAG =PostImageTask.class.getSimpleName();
 
         protected String[] doInBackground(String... userCodes) {
             String[] results = null;
@@ -258,9 +288,10 @@ public class MainActivity extends Activity {
             String fileName = _photoFileUri2.getPath();
             //String fileName = generateMockUri2().getPath();
             String result = UrlHelper.uploadFileToServer(baseUrl + "/api/values", fileName);
+            //String result = UrlHelper.uploadFileToServer("http://10.10.10.43:8888/api/Files/UploadFiles",fileName);
 
-            String[] results = JsonHelper.GetOcrDataFromResponse(result);
-            return results;
+            return JsonHelper.GetOcrDataFromResponse(result);
+            //return results;
         }
 
         protected void onProgressUpdate(Integer... progress) {
