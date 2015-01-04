@@ -14,6 +14,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +25,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.bcards.eu.common.DataClassifyResult;
+import com.bcards.eu.common.DataClassifyResultField;
+import com.bcards.eu.common.DataClassifyResultFieldCandidatesCandidate;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -74,6 +80,13 @@ public class MainActivity extends Activity {
             //Intent ourIntent = new Intent(v.getContext(), MyCameraActivity.class)
                     //.putExtra(Intent.EXTRA_TEXT, "");
             //startActivity(ourIntent);
+        }
+    }
+
+
+    public void onBtnClickedAdd(View v){
+        if(v.getId() == R.id.btnContact){
+
         }
     }
 
@@ -231,8 +244,8 @@ public class MainActivity extends Activity {
             if (height+width >width+heightMax ) {
                 lstMax = lst;
             }
-            if( height > 100 && width > 350)
-                fg.DrawRectangle(lst.get(0).x, lst.get(0).y, width, height);
+            //if( height > 100 && width > 350)
+                //fg.DrawRectangle(lst.get(0).x, lst.get(0).y, width, height);
         }
 
         fg.DrawRectangle(lstMax.get(0).x, lstMax.get(0).y, widthMax, heightMax);
@@ -356,8 +369,13 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
-        public ArrayAdapter<String> fieldsOcr;
-        public MyArrayAdapter m_fields;
+        public ArrayAdapter<String> fieldFirstName;
+        public ArrayAdapter<String> fieldLastName;
+        public ArrayAdapter<String> fieldPosition;
+        public ArrayAdapter<String> fieldEmail;
+        public ArrayAdapter<String> fieldMobile;
+        public ArrayAdapter<String> fieldWebsite;
+        //public MyArrayAdapter m_fields;
 
         public PlaceholderFragment() {
         }
@@ -379,21 +397,48 @@ public class MainActivity extends Activity {
             return rootView;
         }
 
-        private void SetAdapter2(View rootView) {
-            List<DataFieldRecognition> fieldsRecognition = new ArrayList<DataFieldRecognition>();
-            m_fields = new MyArrayAdapter(getActivity(),fieldsRecognition);
-            ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
-            lv1.setAdapter(fieldsOcr);
-        }
+        //private void SetAdapter2(View rootView) {
+        //    List<DataFieldRecognition> fieldsRecognition = new ArrayList<DataFieldRecognition>();
+        //    m_fields = new MyArrayAdapter(getActivity(),fieldsRecognition);
+        //    //ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
+        //    //lv1.setAdapter(fieldsOcr);
+//
+        //    Spinner sp1 = (Spinner) rootView.findViewById(R.id.spinner1);
+        //    sp1.setAdapter(fieldsOcr);
+        //}
 
         private void SetLayoutAdapter(View rootView) {
             List<String> productsList = new ArrayList<String>();
 
-            fieldsOcr = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,productsList);
+            fieldFirstName = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
+            fieldLastName = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
+            fieldPosition = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
 
-            ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
+            fieldEmail = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
+            fieldMobile = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
+            fieldWebsite = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,new ArrayList<String>());
 
-            lv1.setAdapter(fieldsOcr);
+
+            //ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
+            //lv1.setAdapter(fieldsOcr);
+
+            Spinner sp1 = (Spinner) rootView.findViewById(R.id.spinner1);
+            sp1.setAdapter(fieldFirstName);
+
+            Spinner sp2 = (Spinner) rootView.findViewById(R.id.spinner2);
+            sp2.setAdapter(fieldLastName);
+
+            Spinner sp3 = (Spinner) rootView.findViewById(R.id.spinner3);
+            sp3.setAdapter(fieldPosition);
+
+            Spinner sp4 = (Spinner) rootView.findViewById(R.id.spinner4);
+            sp4.setAdapter(fieldEmail);
+
+            Spinner sp5 = (Spinner) rootView.findViewById(R.id.spinner5);
+            sp5.setAdapter(fieldMobile);
+
+            Spinner sp6 = (Spinner) rootView.findViewById(R.id.spinner7);
+            sp6.setAdapter(fieldWebsite);
         }
     }
 
@@ -404,12 +449,12 @@ public class MainActivity extends Activity {
     }
 
 
-    public class PostImageTask extends AsyncTask<String, Integer, String[]> {
+    public class PostImageTask extends AsyncTask<String, Integer, String> {
 
         //private final String LOG_TAG =PostImageTask.class.getSimpleName();
 
-        protected String[] doInBackground(String... userCodes) {
-            String[] results = null;
+        protected String doInBackground(String... userCodes) {
+            String results = null;
             try {
                 String image64 = userCodes[0];
                 results = SendImageString(image64);
@@ -420,7 +465,7 @@ public class MainActivity extends Activity {
             return results;
         }
 
-        private String[] SendImageString(String imgContent) throws Exception {
+        private String SendImageString(String imgContent) throws Exception {
 
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String key = getResources().getString(R.string.pref_baseurl_key);
@@ -434,7 +479,7 @@ public class MainActivity extends Activity {
             String result = UrlHelper.uploadFileToServer(baseUrl + "/api/values", fileName);
             //String result = UrlHelper.uploadFileToServer("http://10.10.10.43:8888/api/Files/UploadFiles",fileName);
 
-            return JsonHelper.GetOcrDataFromResponse(result);
+            return result;
             //return results;
         }
 
@@ -442,13 +487,14 @@ public class MainActivity extends Activity {
             //setProgressPercent(progress[0]);
         }
 
-        protected void onPostExecute(String[] fieldsOcr) {
-
-            UpdateFieldsView(fieldsOcr);
+        @Override
+        protected void onPostExecute(String fieldsOcr) {
+            DataClassifyResult docClasify = JsonHelper.GetDocResultFromResponse(fieldsOcr);
+            UpdateFieldsView(docClasify);
         }
 
-        private void UpdateFieldsView(String[] formatedData) {
-
+        private void UpdateFieldsView(DataClassifyResult fields) {
+            String[] formatedData = null;
             PlaceholderFragment myFragment = (PlaceholderFragment)getFragmentManager().findFragmentByTag("MY_FRAGMENT");
             if (myFragment == null) {
                 //Toast.makeText(this, "Failed to create directory: ", Toast.LENGTH_LONG).show();
@@ -457,14 +503,41 @@ public class MainActivity extends Activity {
 
 
             if (myFragment.isVisible()) {
+                myFragment.fieldFirstName.clear();
+                myFragment.fieldLastName.clear();
+                myFragment.fieldPosition.clear();
+                myFragment.fieldEmail.clear();
+                myFragment.fieldMobile.clear();
+                myFragment.fieldWebsite.clear();
 
-                myFragment.fieldsOcr.clear();
-                if (formatedData == null) {
+                if (fields == null) {
                     formatedData = new String[1];
                     formatedData[0] = "No results";
+                    myFragment.fieldFirstName.addAll(formatedData);
+                    return;
                 }
-                myFragment.fieldsOcr.addAll(formatedData);
+
+                myFragment.fieldFirstName.addAll(GetValues(fields, "fName"));
+                myFragment.fieldLastName.addAll(GetValues(fields, "fLastname"));
+                myFragment.fieldPosition.addAll(GetValues(fields, "fPosition"));
+
+                myFragment.fieldEmail.addAll(GetValues(fields, "fEmail"));
+                myFragment.fieldMobile.addAll(GetValues(fields, "fMobilephone"));
+                myFragment.fieldWebsite.addAll(GetValues(fields, "fCompanyWebsite"));
             }
+        }
+
+        List<String> GetValues(DataClassifyResult fields,String fieldName)
+        {
+            List<String> candidates = new ArrayList<String>();
+            for (DataClassifyResultField field : fields.Items) {
+                if (field.id.equals(fieldName)) {
+                    for (DataClassifyResultFieldCandidatesCandidate candidate : field.candidates) {
+                        candidates.add(candidate.value);
+                    }
+                }
+            }
+            return candidates;
         }
     }
 }

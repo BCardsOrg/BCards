@@ -53,8 +53,6 @@ public class UrlHelper {
         String pathToOurFile = filename;
         String urlServer = targetUrl;
         String lineEnd = "\r\n";
-        String twoHyphens = "--";
-        String boundary = "*****";
         DateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH:mm:ss");
 
         int bytesRead, bytesAvailable, bufferSize;
@@ -76,19 +74,22 @@ public class UrlHelper {
             connection.setRequestMethod("POST");
 
             connection.setRequestProperty("Connection", "Keep-Alive");
-            connection.setRequestProperty("Content-Type",
-                    "multipart/form-data;boundary=" + boundary);
+            //connection.setRequestProperty("Content-Type",
+            //"multipart/form-data;boundary=" + boundary);
+
+            connection.setRequestProperty("doctype","bcards");
+            connection.setRequestProperty("filetype","jpg");
 
             outputStream = new DataOutputStream(connection.getOutputStream());
-            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            //outputStream.writeBytes(twoHyphens + boundary + lineEnd);
 
             String connstr = null;
             connstr = "Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
                     + pathToOurFile + "\"" + lineEnd;
             Log.i("Connstr", connstr);
 
-            outputStream.writeBytes(connstr);
-            outputStream.writeBytes(lineEnd);
+            //outputStream.writeBytes(connstr);
+            //outputStream.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available();
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
@@ -115,9 +116,9 @@ public class UrlHelper {
                 response = "error";
                 return response;
             }
-            outputStream.writeBytes(lineEnd);
-            outputStream.writeBytes(twoHyphens + boundary + twoHyphens
-                    + lineEnd);
+            //outputStream.writeBytes(lineEnd);
+            //outputStream.writeBytes(twoHyphens + boundary + twoHyphens
+            //+ lineEnd);
 
             // Responses from the server (code and message)
             int serverResponseCode = connection.getResponseCode();

@@ -4,6 +4,15 @@ android {
     compileSdkVersion 21
     buildToolsVersion "21.1.0"
 
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+
     defaultConfig {
         applicationId "com.bcards.eu.bcards"
         minSdkVersion 15
@@ -23,7 +32,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     //compile file 'libs/gson-2.3.1.jar'
     //compile file 'libs/Catalano.Android.Image.jar'
     compile files('libs/junit-3.8.2.jar')
@@ -37,4 +46,6 @@ dependencies {
     compile files('src/libs/gson-2.3.1.jar')
     compile files('src/libs/jsoup-1.8.1.jar')
     compile files('src/libs/junit-3.8.2.jar')
+    compile files('libs/jackson-core-2.5.0.jar')
+    compile files('libs/jackson-databind-2.5.0.jar')
 }
