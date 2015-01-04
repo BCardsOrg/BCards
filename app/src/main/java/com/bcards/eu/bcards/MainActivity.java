@@ -121,9 +121,17 @@ public class MainActivity extends Activity {
                 //ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 //imageBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
 
-                //Bitmap resized = Bitmap.createScaledBitmap(imageBitmap2,(int)(imageBitmap2.getWidth()*0.2), (int)(imageBitmap2.getHeight()*0.2), true);
-                //UseCatalano2(imageBitmap2);
+                Bitmap resized = Bitmap.createScaledBitmap(imageBitmap2,(int)(imageBitmap2.getWidth()*0.2), (int)(imageBitmap2.getHeight()*0.2), true);
+                //Bitmap bw = UseCatalano3(resized);
+                Bitmap bw = UseCatalano3(resized);
+                saveToInternalSorage2(bw,_photoFileUri2);
+
+                Bitmap corners = UseCatalano2(bw);
                 //saveToInternalSorage(resized,_photoFileUri2);
+
+                ImageView iv = (ImageView)findViewById(R.id.imageView1);
+                iv.setImageBitmap(corners);
+                iv.setVisibility(View.VISIBLE);
 
 
                 //byte[] bytes = baos.toByteArray();
@@ -131,8 +139,8 @@ public class MainActivity extends Activity {
                 String encodedString = "";//Base64.encodeToString(bytes, Base64.DEFAULT);
 
                 PostDataToCloud(encodedString);
-                ImageView iv = (ImageView)findViewById(R.id.imageView1);
-                iv.setImageBitmap(imageBitmap2);
+                //ImageView iv = (ImageView)findViewById(R.id.imageView1);
+                //iv.setImageBitmap(imageBitmap2);
                 break;
             }
         }
@@ -159,7 +167,7 @@ public class MainActivity extends Activity {
         return null;
     }
 
-    private void UseCatalano3(Bitmap resized) {
+    private Bitmap UseCatalano3(Bitmap resized) {
         //breadley
         //String p1= _photoFileUri2.getPath();
         FastBitmap fb = new FastBitmap(resized);
@@ -184,7 +192,7 @@ public class MainActivity extends Activity {
         //breadley
 
         Bitmap b2 = fb.toBitmap();
-        saveToInternalSorage(b2,_photoFileUri2);
+        return b2;
     }
 
     private Bitmap UseCatalano2(Bitmap resized) {
@@ -205,25 +213,44 @@ public class MainActivity extends Activity {
         //FastGraphics g = fb.();
         fg.setColor(255,0,0);
 
+        ArrayList<IntPoint> lstMax = new ArrayList<>();
+        lstMax.add(new IntPoint(0,0));
+        lstMax.add(new IntPoint(0,0));
+        int heightMax=0;
+        int widthMax=0;
+
         for (Blob blob : blobs) {
             ArrayList<IntPoint> lst = PointsCloud.GetBoundingRectangle(blob.getPoints());
 
             int height = Math.abs(lst.get(0).x - lst.get(1).x);
             int width = Math.abs(lst.get(0).y - lst.get(1).y);
 
-            if (height > 300 && width >600) {
-                fg.DrawRectangle(lst.get(0).x, lst.get(0).y, width, height);
+            heightMax = Math.abs(lstMax.get(0).x - lstMax.get(1).x);
+            widthMax = Math.abs(lstMax.get(0).y - lstMax.get(1).y);
+
+            if (height+width >width+heightMax ) {
+                lstMax = lst;
             }
+            if( height > 100 && width > 350)
+                fg.DrawRectangle(lst.get(0).x, lst.get(0).y, width, height);
         }
+
+        fg.DrawRectangle(lstMax.get(0).x, lstMax.get(0).y, widthMax, heightMax);
 
         //JOptionPane.showMessageDialog(null, image.toIcon());
 
         Bitmap b2 = fb.toBitmap();
-        saveToInternalSorage(b2,_photoFileUri2);
+
+        //Bitmap resizedbitmap1=Bitmap.createBitmap(b2,lstMax.get(0).x, lstMax.get(0).y, widthMax, heightMax);
+
+        //saveToInternalSorage2(resizedbitmap1,_photoFileUri2);
+        saveToInternalSorage2(b2,_photoFileUri2);
+
+
         return b2;
     }
 
-    private String saveToInternalSorage(Bitmap bitmapImage, Uri uriOriginal){
+    private String saveToInternalSorage2(Bitmap bitmapImage, Uri uriOriginal){
 
         resizedPath = uriOriginal.getPath()+".resized.jpg";
 
@@ -341,6 +368,9 @@ public class MainActivity extends Activity {
 
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
+            ImageView iv = (ImageView)rootView.findViewById(R.id.imageView1);
+            iv.setVisibility(View.GONE);
 
             SetLayoutAdapter(rootView);
 

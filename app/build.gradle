@@ -23,8 +23,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile fileTree(dir: 'libs', include: ['*.jar'])
     //compile file 'libs/gson-2.3.1.jar'
     //compile file 'libs/Catalano.Android.Image.jar'
     compile files('libs/junit-3.8.2.jar')
+    compile files('src/libs/Catalano.Android.Image.jar')
+    compile files('src/libs/Catalano.Core.jar')
+    compile files('src/libs/Catalano.Fuzzy.jar')
+    compile files('src/libs/Catalano.MachineLearning.jar')
+    compile files('src/libs/Catalano.Math.jar')
+    compile files('src/libs/Catalano.Neuro.jar')
+    compile files('src/libs/Catalano.Statistics.jar')
+    compile files('src/libs/gson-2.3.1.jar')
+    compile files('src/libs/jsoup-1.8.1.jar')
+    compile files('src/libs/junit-3.8.2.jar')
 }
