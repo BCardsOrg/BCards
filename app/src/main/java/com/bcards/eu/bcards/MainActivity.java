@@ -22,31 +22,39 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
+import Catalano.Core.IntPoint;
+import Catalano.Imaging.Concurrent.Filters.BradleyLocalThreshold;
+import Catalano.Imaging.Concurrent.Filters.Grayscale;
+import Catalano.Imaging.FastBitmap;
+import Catalano.Imaging.FastGraphics;
+import Catalano.Imaging.Tools.Blob;
+import Catalano.Imaging.Tools.BlobDetection;
+import Catalano.Math.Geometry.PointsCloud;
 
 public class MainActivity extends Activity {
 
     //camera take pictures
     final int TAKE_PHOTO_CODE = 1099;
     Uri _photoFileUri2;
+    PlaceholderFragment myFragment2;
+    String resizedPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-
 
             FragmentTransaction fragTrans = getFragmentManager().beginTransaction();
             PlaceholderFragment myFragment = new PlaceholderFragment();
@@ -56,17 +64,16 @@ public class MainActivity extends Activity {
             fragTrans.add(R.id.container, myFragment,"MY_FRAGMENT")
                     .commit();
 
-
-           // getFragmentManager().beginTransaction()
-                    //.replace(R.id.MainFrameLayout,myFragment,"MY_FRAGMENT")
-                    //.addToBackStack("YOUR_SOURCE_FRAGMENT_TAG").commit();
-
         }
     }
 
     public void onBtnClicked(View v){
         if(v.getId() == R.id.btnCam){
             TakePicture();
+
+            //Intent ourIntent = new Intent(v.getContext(), MyCameraActivity.class)
+                    //.putExtra(Intent.EXTRA_TEXT, "");
+            //startActivity(ourIntent);
         }
     }
 
@@ -81,7 +88,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent resultIntent) {
-        Bitmap imageBitmap = null;
+        Bitmap imageBitmap2 = null;
 
         if (resultCode == RESULT_CANCELED) {
             Toast.makeText(this, "User Canceled", Toast.LENGTH_LONG).show();
@@ -94,24 +101,43 @@ public class MainActivity extends Activity {
                 Toast.makeText(getBaseContext(), "Sending to be recognized ...",
                         Toast.LENGTH_SHORT).show();
 
-                imageBitmap = BitmapFactory.decodeFile(_photoFileUri2.getPath());
+                if (_photoFileUri2 == null) {
+                    Toast.makeText(this, "Failed send image.. Please try again: ", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
-                Bitmap resized = Bitmap.createScaledBitmap(imageBitmap,(int)(imageBitmap.getWidth()*0.2), (int)(imageBitmap.getHeight()*0.2), true);
-                saveToInternalSorage(resized,_photoFileUri2);
+                //imageBitmap2 = BitmapFactory.decodeFile(_photoFileUri2.getPath());
+                imageBitmap2 = loadImage(_photoFileUri2.getPath());
+
+                //
+                //saveToInternalSorage(resized,_photoFileUri2);
+
+                //ImageIcon imageIcon = new ImageIcon("src/slime.png");
+
+                //Icon pie = new ImageIcon(ImageIO.read( FirstUI.class.getResourceAsStream( "pie.png" ) ) );
+
 
                 //base64
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                resized.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+                //ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                //imageBitmap2.compress(Bitmap.CompressFormat.JPEG, 100, baos); //bm is the bitmap object
+
+                //Bitmap resized = Bitmap.createScaledBitmap(imageBitmap2,(int)(imageBitmap2.getWidth()*0.2), (int)(imageBitmap2.getHeight()*0.2), true);
+                //UseCatalano2(imageBitmap2);
+                //saveToInternalSorage(resized,_photoFileUri2);
+
+
                 //byte[] bytes = baos.toByteArray();
                 //String encodedString = Base64.encodeToString(bytes, Base64.DEFAULT);
                 String encodedString = "";//Base64.encodeToString(bytes, Base64.DEFAULT);
 
                 PostDataToCloud(encodedString);
+                ImageView iv = (ImageView)findViewById(R.id.imageView1);
+                iv.setImageBitmap(imageBitmap2);
                 break;
             }
         }
 
-        if(imageBitmap != null) {
+        if(imageBitmap2 != null) {
             //imageView.setImageBitmap(imageBitmap);
         }
 
@@ -120,9 +146,86 @@ public class MainActivity extends Activity {
         //Uri.parse("file://" + Environment.getExternalStorageDirectory())));
     }
 
+    private Bitmap loadImage(String imgPath) {
+        BitmapFactory.Options options;
+        try {
+            options = new BitmapFactory.Options();
+            options.inSampleSize = 2;
+            Bitmap bitmap = BitmapFactory.decodeFile(imgPath, options);
+            return bitmap;
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void UseCatalano3(Bitmap resized) {
+        //breadley
+        //String p1= _photoFileUri2.getPath();
+        FastBitmap fb = new FastBitmap(resized);
+
+        // Convert to grayscale
+        Grayscale g = new Grayscale();
+        g.applyInPlace(fb);
+
+
+        //SusanCornersDetector susan = new SusanCornersDetector();
+        //ArrayList<IntPoint> lst = susan.ProcessImage(fb);
+
+
+        //If you want to detect using Harris
+        //HarrisCornersDetector harris = new HarrisCornersDetector();
+        //ArrayList<IntPoint> lst2 = harris.ProcessImage(fb);
+
+        // Apply Bradley local threshold
+        BradleyLocalThreshold bradley = new BradleyLocalThreshold();
+        bradley.applyInPlace(fb);
+
+        //breadley
+
+        Bitmap b2 = fb.toBitmap();
+        saveToInternalSorage(b2,_photoFileUri2);
+    }
+
+    private Bitmap UseCatalano2(Bitmap resized) {
+        FastBitmap fb = new FastBitmap(resized);
+
+        // Convert to grayscale
+        //Grayscale g = new Grayscale();
+        //g.applyInPlace(fb);
+
+        //Threshold t = new Threshold();
+        //t.applyInPlace(fb);
+
+        BlobDetection bd = new BlobDetection();
+        ArrayList<Blob> blobs = bd.ProcessImage(fb);
+
+        fb.toRGB();
+        FastGraphics fg = new FastGraphics(fb);
+        //FastGraphics g = fb.();
+        fg.setColor(255,0,0);
+
+        for (Blob blob : blobs) {
+            ArrayList<IntPoint> lst = PointsCloud.GetBoundingRectangle(blob.getPoints());
+
+            int height = Math.abs(lst.get(0).x - lst.get(1).x);
+            int width = Math.abs(lst.get(0).y - lst.get(1).y);
+
+            if (height > 300 && width >600) {
+                fg.DrawRectangle(lst.get(0).x, lst.get(0).y, width, height);
+            }
+        }
+
+        //JOptionPane.showMessageDialog(null, image.toIcon());
+
+        Bitmap b2 = fb.toBitmap();
+        saveToInternalSorage(b2,_photoFileUri2);
+        return b2;
+    }
+
     private String saveToInternalSorage(Bitmap bitmapImage, Uri uriOriginal){
 
-        String path = uriOriginal.getPath()+".resized.jpg";
+        resizedPath = uriOriginal.getPath()+".resized.jpg";
 
 
 
@@ -133,9 +236,10 @@ public class MainActivity extends Activity {
         //File mypath3=new File(directory,"profile.jpg");
 
         FileOutputStream fos = null;
+
         try {
 
-            fos = new FileOutputStream(path);
+            fos = new FileOutputStream(resizedPath);
 
             // Use the compress method on the BitMap object to write image to the OutputStream
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
@@ -226,6 +330,7 @@ public class MainActivity extends Activity {
     public static class PlaceholderFragment extends Fragment {
 
         public ArrayAdapter<String> fieldsOcr;
+        public MyArrayAdapter m_fields;
 
         public PlaceholderFragment() {
         }
@@ -237,6 +342,21 @@ public class MainActivity extends Activity {
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+            SetLayoutAdapter(rootView);
+
+            //SetAdapter2(rootView);
+
+            return rootView;
+        }
+
+        private void SetAdapter2(View rootView) {
+            List<DataFieldRecognition> fieldsRecognition = new ArrayList<DataFieldRecognition>();
+            m_fields = new MyArrayAdapter(getActivity(),fieldsRecognition);
+            ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
+            lv1.setAdapter(fieldsOcr);
+        }
+
+        private void SetLayoutAdapter(View rootView) {
             List<String> productsList = new ArrayList<String>();
 
             fieldsOcr = new ArrayAdapter<String>(getActivity(), R.layout.list_item_bcard,R.id.list_item_bcards_textview,productsList);
@@ -244,8 +364,6 @@ public class MainActivity extends Activity {
             ListView lv1 = (ListView) rootView.findViewById(R.id.listview_bcards_list);
 
             lv1.setAdapter(fieldsOcr);
-
-            return rootView;
         }
     }
 
@@ -274,18 +392,14 @@ public class MainActivity extends Activity {
 
         private String[] SendImageString(String imgContent) throws Exception {
 
-            HashMap<String, String> map = new HashMap<String, String>();
-            map.put("PublisherId","1091");
-            map.put("Id","1234");
-            map.put("Description","descr");
-            map.put("ImageContent",imgContent);
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
             String key = getResources().getString(R.string.pref_baseurl_key);
             String def = getResources().getString(R.string.pref_baseurl_default);
             String baseUrl = prefs.getString(key, def);
 
             String fileName = _photoFileUri2.getPath();
+            //String fileName = resizedPath;
+
             //String fileName = generateMockUri2().getPath();
             String result = UrlHelper.uploadFileToServer(baseUrl + "/api/values", fileName);
             //String result = UrlHelper.uploadFileToServer("http://10.10.10.43:8888/api/Files/UploadFiles",fileName);
@@ -306,6 +420,12 @@ public class MainActivity extends Activity {
         private void UpdateFieldsView(String[] formatedData) {
 
             PlaceholderFragment myFragment = (PlaceholderFragment)getFragmentManager().findFragmentByTag("MY_FRAGMENT");
+            if (myFragment == null) {
+                //Toast.makeText(this, "Failed to create directory: ", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+
             if (myFragment.isVisible()) {
 
                 myFragment.fieldsOcr.clear();
@@ -318,3 +438,5 @@ public class MainActivity extends Activity {
         }
     }
 }
+
+

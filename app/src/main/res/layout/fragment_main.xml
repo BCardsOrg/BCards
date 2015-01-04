@@ -5,13 +5,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context=".MainActivity$ForecastFragment"
-    android:background="@drawable/bcards_back4">
+    android:background="@drawable/bcards_back4"
+    android:tag="@+id/unique_fragid1">
+    <ImageView android:id="@+id/imageView1" android:layout_height="800px" android:src="@drawable/ic_launcher" android:layout_width="1600px"></ImageView>
     <ListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/listview_bcards_list"
         />
-
     <Button
         style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"

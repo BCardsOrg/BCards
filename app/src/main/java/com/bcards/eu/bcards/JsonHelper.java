@@ -1,5 +1,7 @@
 package com.bcards.eu.bcards;
 
+import com.bcards.eu.common.DataClassifyResult;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,11 +39,24 @@ public class JsonHelper {
 
             for (int j = 0; j < fieldArray.length(); j++) {
                 JSONObject candidate = candidates.getJSONObject(j);
-                cand1 = candidate.getString(OWM_VALUE)+ " - " + candidate.getString(OWM_CONFIDENCE);
+                    cand1 = candidate.getString(OWM_VALUE);//+ " - " + candidate.getString(OWM_CONFIDENCE);
                 break;
             }
-            resultStrs[i] = id + " - " + cand1;
+            if ( id.contains("kw") == false)
+                resultStrs[i] = id + " - " + cand1;
         }
         return resultStrs;
+    }
+
+
+    public static DataClassifyResult GetDocResultFromResponse(String jSonResultString) throws JSONException
+    {
+        return  new DataClassifyResult();
+    }
+
+    public static DataClassifyResult GetDocResultFromResponseMock(String jSonResultString) throws JSONException
+    {
+        DataClassifyResult doc =  new DataClassifyResult();
+        return doc;
     }
 }

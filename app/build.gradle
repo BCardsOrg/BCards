@@ -10,6 +10,9 @@ android {
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
+        testApplicationId "com.bcards.eu.bcardstest"
+        testInstrumentationRunner "android.test.InstrumentationTestRunner"
+        testFunctionalTest true
     }
     buildTypes {
         release {
@@ -20,5 +23,8 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //compile file 'libs/gson-2.3.1.jar'
+    //compile file 'libs/Catalano.Android.Image.jar'
+    compile files('libs/junit-3.8.2.jar')
 }
