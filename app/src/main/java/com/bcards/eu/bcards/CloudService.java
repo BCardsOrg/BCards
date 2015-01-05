@@ -1,11 +1,8 @@
 package com.bcards.eu.bcards;
 
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 
 import com.bcards.eu.common.DataClassifyResult;
-import com.bcards.eu.common.DataClassifyResultFieldCandidatesCandidate;
 import com.bcards.eu.common.ICloudService;
 import com.bcards.eu.common.IOnFieldsResultsReceived;
 import com.bcards.eu.common.UrlFilePair;
@@ -70,7 +67,7 @@ public class CloudService implements ICloudService {
                 UrlFilePair urlFile = files[0];
 
                 //String fileName = generateMockUri2().getPath();
-                String result = UrlHelper.uploadFileToServer(urlFile.Url, urlFile.FileName);
+                String result = "";//UrlHelper.uploadFileToServer(urlFile.Url, urlFile.FileName);
                 //String result = UrlHelper.uploadFileToServer("http://10.10.10.43:8888/api/Files/UploadFiles",fileName);
 
                 return JsonHelper.GetDocResultFromResponse(result);
@@ -79,25 +76,6 @@ public class CloudService implements ICloudService {
                 e.printStackTrace();
             }
             return results;
-        }
-
-        private String[] SendImageString(String imgContent) throws Exception {
-
-            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            //String key = getResources().getString(R.string.pref_baseurl_key);
-            //String def = getResources().getString(R.string.pref_baseurl_default);
-            //String baseUrl = prefs.getString(key, def);
-
-            //String fileName = _photoFileUri2.getPath();
-            //String fileName = resizedPath;
-
-            //String fileName = generateMockUri2().getPath();
-            //String result = UrlHelper.uploadFileToServer(baseUrl + "/api/values", fileName);
-            //String result = UrlHelper.uploadFileToServer("http://10.10.10.43:8888/api/Files/UploadFiles",fileName);
-
-            //return JsonHelper.GetOcrDataFromResponse(result);
-            //return results;
-            return null;
         }
 
         protected void onProgressUpdate(Integer... progress) {

@@ -1,145 +1,41 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity$ForecastFragment"
-    android:background="@drawable/bcards_back4"
-    android:tag="@+id/unique_fragid1">
-    <ImageView android:id="@+id/imageView1"
-        android:layout_height="600px" android:src="@drawable/ic_launcher" android:layout_width="600px" android:layout_gravity="right"></ImageView>
+    tools:context="com.bcards.eu.bcards.MainActivity$PlaceholderFragment">
 
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_cam_label"
-        android:id="@+id/btnCam"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="onBtnClicked"
-        android:layout_gravity="right|bottom" />
-    <Button
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/btn_add_label"
-        android:id="@+id/btnContact"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:onClick="onBtnClickedAdd"
-        android:layout_gravity="right|top" />
-
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="700px"
+        android:id="@+id/list_doc_types"
+        />
     <LinearLayout
-        android:id="@+id/spinnerFirstName"
+        android:orientation="horizontal"
+        android:layout_width="276dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|bottom"></LinearLayout>
+
+    <EditText
+        android:layout_width="213dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText"
+        android:layout_gravity="right|bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/list_doc_types"
+        android:layout_alignEnd="@+id/list_doc_types"
+        android:layout_toRightOf="@+id/btnAddDoc"
+        android:layout_toEndOf="@+id/btnAddDoc" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/radioGroup"
-        android:orientation="vertical" >
-        <LinearLayout
-            android:id="@+id/spinnerVertical"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroup"
-            android:orientation="horizontal" >
-        <TextView
-            android:id="@+id/colourLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/field_firstName" />
-        <Spinner
-            android:id="@+id/spinner1"
-            android:layout_width="250dp"
-            android:layout_height="100px"
-            android:layout_weight="1" />
-        </LinearLayout>
-        <LinearLayout
-        android:id="@+id/linearFirstName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/radioGroup"
-        android:orientation="horizontal" >
-        <TextView
-            android:id="@+id/colourLabel2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/field_lastName" />
-        <Spinner
-            android:id="@+id/spinner2"
-            android:layout_width="250dp"
-            android:layout_height="100px"
-            android:layout_weight="1" />
-    </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroup"
-            android:orientation="horizontal" >
-            <TextView
-                android:id="@+id/colourLabel3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/field_position" />
-            <Spinner
-                android:id="@+id/spinner3"
-                android:layout_width="250dp"
-                android:layout_height="100px"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroup"
-            android:orientation="horizontal" >
-            <TextView
-                android:id="@+id/colourLabel4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/field_email" />
-            <Spinner
-                android:id="@+id/spinner4"
-                android:layout_width="250dp"
-                android:layout_height="100px"
-                android:layout_weight="1" />
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroup"
-            android:orientation="horizontal" >
-            <TextView
-                android:id="@+id/colourLabel5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/field_mobile" />
-            <Spinner
-                android:id="@+id/spinner5"
-                android:layout_width="250dp"
-                android:layout_height="100px"
-                android:layout_weight="1"/>
-        </LinearLayout>
-        <LinearLayout
-            android:id="@+id/linear7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/radioGroup"
-            android:orientation="horizontal" >
-            <TextView
-                android:id="@+id/colour7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/field_website" />
-            <Spinner
-                android:id="@+id/spinner7"
-                android:layout_width="250dp"
-                android:layout_height="100px"
-                android:layout_weight="1" />
-        </LinearLayout>
-    </LinearLayout>
-</FrameLayout>
+        android:text="@string/btn_add_doc"
+        android:id="@+id/btnAddDoc"
+        android:onClick="onBtnClicked"
+        android:layout_gravity="right|bottom"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/round_button"/>
+</RelativeLayout>

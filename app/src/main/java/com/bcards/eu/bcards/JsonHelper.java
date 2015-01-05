@@ -1,14 +1,11 @@
 package com.bcards.eu.bcards;
 
 import com.bcards.eu.common.DataClassifyResult;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.jar.JarEntry;
 
 /**
  * Created by eu on 11/30/2014.

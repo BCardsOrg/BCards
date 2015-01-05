@@ -23,14 +23,25 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"
+            android:screenOrientation="landscape"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.bcards.eu.bcards.MainActivity" />
         </activity>
         <activity
+            android:name=".GenericResultActivity"
+            android:label="@string/title_activity_recognition_results"
+            android:screenOrientation="landscape"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bcards.eu.bcards.GenericResultActivity" />
+        </activity>
+        <activity
             android:name=".MyCameraActivity"
             android:label="@string/title_activity_my_camera"
+            android:screenOrientation="landscape"
             android:parentActivityName=".MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

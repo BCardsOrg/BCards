@@ -41,7 +41,7 @@ public class UrlHelper {
 
     public static String LOGGER_TAG = "URLREQ:";
 
-    public static String uploadFileToServer(String targetUrl, String filename) {
+    public static String uploadFileToServer(String targetUrl, String filename ,String docType) {
         String result="";
         String response = "error";
         Log.e("Image filename", filename);
@@ -77,7 +77,7 @@ public class UrlHelper {
             //connection.setRequestProperty("Content-Type",
             //"multipart/form-data;boundary=" + boundary);
 
-            connection.setRequestProperty("doctype","bcards");
+            connection.setRequestProperty("doctype",docType);
             connection.setRequestProperty("filetype","jpg");
 
             outputStream = new DataOutputStream(connection.getOutputStream());
